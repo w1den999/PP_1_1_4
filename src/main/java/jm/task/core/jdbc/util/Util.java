@@ -14,10 +14,17 @@ public class Util {
     private static final String HOST = "jdbc:mysql://localhost:3306/dbtest";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "1997";
+    public static Connection connection;
 
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(HOST, USERNAME, PASSWORD);
+    public static Connection getConnection() {
+        try {
+            connection = DriverManager.getConnection(HOST, USERNAME, PASSWORD);
+
+        } catch (SQLException e) {
+            System.out.println("No connection");
+        }
+        return connection;
     }
 
     public static SessionFactory sessionFactory;
@@ -40,7 +47,7 @@ public class Util {
                         .addAnnotatedClass(User.class)
                         .buildSessionFactory();
             } catch (Exception e) {
-                System.out.println("Ошибка соединения с БД.");
+                System.out.println("Error.");
             }
         }
         return sessionFactory;
