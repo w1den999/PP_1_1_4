@@ -40,7 +40,7 @@ public class Util {
                         .addAnnotatedClass(User.class)
                         .buildSessionFactory();
             } catch (Exception e) {
-                System.out.println("Ошибка соединения с БД.");
+                System.out.println("РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р”.");
             }
         }
         return sessionFactory;
