@@ -7,10 +7,14 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import javax.persistence.Query;
+import java.sql.SQLException;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
-    public final SessionFactory sessionFactory = Util.getSessionFactory();
+    public final SessionFactory sessionFactory;
+    public UserDaoHibernateImpl(){
+        sessionFactory = Util.getSessionFactory();
+    }
 
     @Override
     public void createUsersTable() {
@@ -46,42 +50,58 @@ public class UserDaoHibernateImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        session.save(new User(name, lastName, age));
-        transaction.commit();
-        session.close();
+        try{
+            session.save(new User(name, lastName, age));
+            transaction.commit();
+            session.close();
+        }catch (RuntimeException e){
+            transaction.rollback();
+        }
+
     }
 
     @Override
     public void removeUserById(long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
+        try{
         session.delete(session.get(User.class, id));
         transaction.commit();
         session.close();
+    } catch (RuntimeException e) {
+        transaction.rollback();
+    }
     }
 
     @Override
     public List<User> getAllUsers() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        List<User> list = session.createQuery("SELECT u FROM User u", User.class).getResultList();
-        transaction.commit();
-        session.close();
-        return list;
+        List<User> list = null;
+        try {
+            list = session.createQuery("SELECT u FROM User u", User.class).getResultList();
+            transaction.commit();
+            session.close();
 
+        } catch (RuntimeException e) {
+            transaction.rollback();
+        }
+        return list;
     }
 
     @Override
     public void cleanUsersTable() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        String sql = " TRUNCATE TABLE users;";
-        Query query = session.createSQLQuery(sql);
-        query.executeUpdate();
-        transaction.commit();
-        session.close();
-
-
+        try {
+            String sql = " TRUNCATE TABLE users;";
+            Query query = session.createSQLQuery(sql);
+            query.executeUpdate();
+            transaction.commit();
+            session.close();
+        } catch (RuntimeException e) {
+            transaction.rollback();
+        }
 
     }
 }

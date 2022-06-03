@@ -6,16 +6,13 @@ import javax.persistence.*;
 @Table(name = "users")
 public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id()
+    @Id
     private Long id;
 
-    @Column
     private String name;
 
-    @Column
     private String lastName;
 
-    @Column
     private Byte age;
 
     public User() {
